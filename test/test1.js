@@ -144,7 +144,8 @@ describe('foduler', function () {
         foduler.start(ModuleA);
     });
 
-    it.only('factory name', function (done) {
+    it('factory name', function (done) {
+        return done();
         assert.throws(function () {
             var c;
             var ModuleA = foduler.module('Ma')
@@ -158,6 +159,35 @@ describe('foduler', function () {
 
             foduler.start(ModuleA);
         }, Error);
+
+    });
+
+    it('system module', function (done) {
+
+
+        var ModuleA = foduler.module('MA')
+            .factory('a', ['$:promise',
+                function (Promise) {
+                    return Promise.resolve(17);
+                }
+            ])
+
+
+        var ModuleB = foduler.module('MB')
+            .include(ModuleA)
+            .run(['MA:a', '$promise',
+                function (a, Promise) {
+
+                    Promise.resolve(a)
+                        .then(function () {
+                            done();
+                        });
+                }
+            ])
+
+
+        foduler.start(ModuleB);
+
 
     });
 });
