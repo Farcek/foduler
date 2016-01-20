@@ -1,5 +1,5 @@
 var assert = require('assert');
-var Foduler = require('../index');
+var Foduler = require('../foduler');
 
 describe('foduler', function () {
     var foduler;
