@@ -381,10 +381,10 @@ module.exports.factory = function ($instanceName) {
 };
 
 
-var test = foduler('edsd');
-
-test.module('test')
-    .factory('aa:a')
-    .run(function () {
-        console.log(12);
-    });
+//var test = foduler('edsd');
+//
+//test.module('test')
+//    .factory('aa:a')
+//    .run(function () {
+//        console.log(12);
+//    });
