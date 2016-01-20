@@ -145,7 +145,8 @@ describe('foduler', function () {
     });
 
     it('factory name', function (done) {
-        return done();
+        if (true)
+            return done();
         assert.throws(function () {
             var c;
             var ModuleA = foduler.module('Ma')
@@ -154,7 +155,7 @@ describe('foduler', function () {
                 })
                 .run(function () {
                     done();
-                })
+                });
 
 
             foduler.start(ModuleA);
@@ -170,7 +171,7 @@ describe('foduler', function () {
                 function (Promise) {
                     return Promise.resolve(17);
                 }
-            ])
+            ]);
 
 
         var ModuleB = foduler.module('MB')
@@ -183,11 +184,48 @@ describe('foduler', function () {
                             done();
                         });
                 }
-            ])
+            ]);
 
 
         foduler.start(ModuleB);
 
 
     });
+
+    describe('promise', function () {
+        it('factory.only', function (done) {
+
+            var a;
+
+            var ModuleA = foduler.module('MA')
+                .run(['$promise',
+                    function (Promise) {
+                        return new Promise(function (resolve) {
+                            console.log(2)
+                            setTimeout(function () {
+                                console.log(3)
+                                a = 1;
+                                resolve();
+                            }, 1000);
+                        });
+                    }
+                ])
+
+
+            var ModuleB = foduler.module('MB')
+                .include(ModuleA)
+                .on('postRun', function () {
+                    console.log(1)
+                    assert.equal(1, a);
+                    done();
+                });
+
+
+            foduler.start(ModuleB);
+
+
+        });
+    });
+
+
 });

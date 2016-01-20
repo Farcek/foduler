@@ -247,7 +247,6 @@ function $$foduleInstance($instanceName) {
                 }));
             }
 
-
             return Promise.resolve()
                 .then(function () {
                     return runConfigs();
@@ -258,8 +257,6 @@ function $$foduleInstance($instanceName) {
                 .then(function () {
                     return;
                 });
-
-
         },
 
         $invoke: function (handle, $fodule) {
