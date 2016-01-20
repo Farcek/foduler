@@ -1,5 +1,5 @@
 var assert = require('assert');
-var Foduler = require('../foduler');
+var Foduler = require('../index');
 
 describe('foduler', function () {
     var foduler;
@@ -129,7 +129,7 @@ describe('foduler', function () {
 
             })
 
-            .on('postRun',['a1',
+            .on('postRun', ['a1',
                 function (a1) {
                     assert.equal(a1, 11);
                     assert.equal(c, 15);
@@ -141,7 +141,23 @@ describe('foduler', function () {
             });
 
 
-
         foduler.start(ModuleA);
+    });
+
+    it.only('factory name', function (done) {
+        assert.throws(function () {
+            var c;
+            var ModuleA = foduler.module('Ma')
+                .factory('a:a', function () {
+
+                })
+                .run(function () {
+                    done();
+                })
+
+
+            foduler.start(ModuleA);
+        }, Error);
+
     });
 });

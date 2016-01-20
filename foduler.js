@@ -6,6 +6,11 @@ var stringFormat = require('string-format');
     stringFormat.extend(String.prototype);
 })();// init system
 
+function nameChecker(name) {
+    if (name.indexOf(':') > -1)
+        throw  new Error('not supported name. not allowed `:` char');
+}
+
 function $$module(name) {
     var $self, $as, $includes = [], $factories = {}, $runs = [], $name = _.trim(name),
         $values = {}, $configs = [], $events = {};
@@ -43,6 +48,7 @@ function $$module(name) {
         },
 
         as: function (as) {
+            nameChecker(name);
             $as = as;
             return $self;
         },
@@ -52,13 +58,15 @@ function $$module(name) {
                 return $self;
             }
 
-            throw 'module bish bna. ' + module;
+            throw new Error('module bish bna. ' + module);
         },
         value: function (name, value) {
             $values[name] = value;
             return $self;
         },
         on: function (name, handle) {
+            nameChecker(name);
+
             ($events[name] || ($events[name] = [])).push(handle);
 
             return $self;
@@ -69,6 +77,9 @@ function $$module(name) {
         },
 
         factory: function (name, handles) {
+
+            nameChecker(name);
+
             $factories[name] = handles;
             return $self;
         },
@@ -96,7 +107,7 @@ function $$fodule($module, $instance) {
             return $instance.$invoke(handle, $self);
         },
         emit: function (name) {
-            var items = []
+            var items = [];
             var listeners = $module.$events[name] || [];
             _.each(listeners, function (handle) {
                 items.push($self.$invoke(handle));
@@ -110,11 +121,11 @@ function $$fodule($module, $instance) {
     $instance.$fodules[$self.$name] = $self;
 
     if ($self.$as in $instance.$aliasFodules) {
-        throw  '`{srcModule}` nertei module-n `{as}` alias ni `{deffModule}` nertai module-n alias-tai ijilhen bna'.format({
+        throw new Error('`{srcModule}` nertei module-n `{as}` alias ni `{deffModule}` nertai module-n alias-tai ijilhen bna'.format({
             srcModule: $module.$name,
             deffModule: $instance.$aliasFodules[$module.$as].$module.$name,
             as: $module.$as
-        });
+        }));
     }
     $instance.$aliasFodules[$self.$as] = $self;
 
@@ -171,10 +182,12 @@ function $$foduleInstance($instanceName) {
             return $factoriesInstances;
         },
         register: function (module) {
-            if (module.$name in $modules) throw  '`{$instanceName}` nertei foduleInstance dotor `{module}` nertei module burtguulchihsen bna'.format({
-                module: module.$name,
-                $instanceName: $instanceName
-            });
+            if (module.$name in $modules) {
+                throw new Error('`{$instanceName}` nertei foduleInstance dotor `{module}` nertei module burtguulchihsen bna'.format({
+                    module: module.$name,
+                    $instanceName: $instanceName
+                }));
+            }
 
             $modules[module.$name] = true;
         },
@@ -183,11 +196,13 @@ function $$foduleInstance($instanceName) {
 
             var $fodule = $$fodule($module, $self);
 
-            if (!($module.$name in $fodules))
-                throw  "`{$instanceName}` nertei foduleInstance dotor `{module}` nertei module burtgegdeegui bna".format({
+            if (!($module.$name in $fodules)) {
+                throw new Error("`{$instanceName}` nertei foduleInstance dotor `{module}` nertei module burtgegdeegui bna".format({
                     module: $module.$name,
                     $instanceName: $instanceName
-                });
+                }));
+            }
+
 
             return Promise.resolve()
                 .then(function () {
@@ -215,7 +230,7 @@ function $$foduleInstance($instanceName) {
                     name: _.trim(names[1])
                 };
             }
-            throw 'not supported name';
+            throw new Error('todo. not supported name. ');
         },
         $invoke: function (handle, $fodule) {
 
@@ -240,7 +255,7 @@ function $$foduleInstance($instanceName) {
                             if (dep) {
                                 dependencies.push(dep.result);
                             } else {
-                                throw 'not found factory `{0}`'.format(factoryName);
+                                throw new Error('not found factory `{0}`'.format(factoryName));
                             }
                         }
                     }
@@ -257,7 +272,7 @@ function $$foduleInstance($instanceName) {
                     //    return;
                 }
             }
-            throw  'not supported handle';
+            throw  new Error('not supported handle');
         },
         $factoryValue: function (factoryName, $fodule) {
             var namer = $self.$namer(factoryName), fodule;
@@ -312,7 +327,7 @@ function $$foduleInstance($instanceName) {
     });
 
     function emit(name) {
-        var items = []
+        var items = [];
         _.each($fodules, function (fodule) {
             items.push(Promise.all(fodule.emit(name)));
         });
@@ -364,3 +379,12 @@ module.exports = foduler('default foduleInstance');
 module.exports.factory = function ($instanceName) {
     return foduler($instanceName);
 };
+
+
+var test = foduler('edsd');
+
+test.module('test')
+    .factory('aa:a')
+    .run(function () {
+        console.log(12);
+    });

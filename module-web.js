@@ -1,7 +1,7 @@
 var foduler = require('./foduler1');
 
 
-module.exports = foduler.module('module:web-base')
+module.exports = foduler.module('web-base').as('$web')
     .factory('express', function () {
         return require('express');
     })
@@ -54,28 +54,28 @@ module.exports = foduler.module('module:web-base')
                     base.use(path, router);
                 }
                 return router;
-            }
+            };
         }
     ])
 
 
 
-    .factory('module:web-base tools', ['module:web-base pager', 'module:web-base ordering', 'module:web-base filtering',
+    .factory('tools', ['tool.pager', 'tool.ordering', 'tool.filtering',
         function (pager, order, filter) {
             return {
                 pager: pager, order: order, filter: filter
-            }
+            };
         }
     ])
-    .factory('module:web-base pager', function () {
+    .factory('tool.pager', function () {
         return function (name) {
             return function (req, res, next) {
 
                 var str = req.query[name || 'pagination'];
-                var pagination = {}
+                var pagination = {};
                 if (str) {
                     try {
-                        pagination = JSON.parse(str)
+                        pagination = JSON.parse(str);
                     } catch (e) {
 
                     }
@@ -89,52 +89,46 @@ module.exports = foduler.module('module:web-base')
                     page: p,
                     limit: l,
                     offset: (p - 1) * l
-                }
-                next()
-            }
-        }
+                };
+                next();
+            };
+        };
     })
-    .factory('module:web-base ordering', function () {
+    .factory('tool.ordering', function () {
         return function (name) {
 
             return function (req, res, next) {
 
                 var str = req.query[name || 'ordering'];
-                var ordering = {}
+                var ordering = {};
                 if (str) {
                     try {
-                        var params = JSON.parse(str)
+                        var params = JSON.parse(str);
 
                         for (var k in params) {
                             ordering.field = k;
                             ordering.type = params[k];
-                            break
+                            break;
                         }
                     } catch (e) {
 
                     }
-
-
                 }
-
-
-                req.ordering = ordering
-
-
-                next()
-            }
-        }
+                req.ordering = ordering;
+                next();
+            };
+        };
     })
-    .factory('module:web-base filtering', function () {
+    .factory('tool.filtering', function () {
         return function (name) {
 
             return function (req, res, next) {
 
                 var str = req.query[name || 'filtering'];
-                var params = []
+                var params = [];
                 if (str) {
                     try {
-                        params = JSON.parse(str)
+                        params = JSON.parse(str);
                     } catch (e) {
 
                     }
@@ -150,12 +144,12 @@ module.exports = foduler.module('module:web-base')
                                 var v = it.v || it.vl || it.value;
                                 var op = it.op || it.operator;
                                 if (n && op)
-                                    q.orWhere(n, op, v)
+                                    q.orWhere(n, op, v);
                             }
 
-                        })
-                    }
-                }
+                        });
+                    };
+                };
 
                 req.filtering = {
                     params: params,
@@ -165,31 +159,27 @@ module.exports = foduler.module('module:web-base')
 
                                 if (it)
                                     if ('$or' in  it) {
-                                        q.where(groupOr(it.$or))
+                                        q.where(groupOr(it.$or));
                                     } else {
-                                        console.log('and q', it)
+
                                         var n = it.n || it.name || it.field;
                                         var v = it.v || it.vl || it.value;
                                         var op = it.op || it.operator;
                                         if (n && op)
-                                            q.where(n, op, v)
+                                            q.where(n, op, v);
                                     }
-                            })
+                            });
                         }
                         return q;
-
-
                     }
-                }
-
-
-                next()
-            }
-        }
+                };
+                next();
+            };
+        };
     })
 
 
-    .factory('m:w promise-express', ['Promise', function (Promise) {
+    .factory('promise-express', ['Promise', function (Promise) {
         return function (req, res, next) {
             res.promiseJson = function (fn) {
                 Promise.try(fn)
@@ -202,53 +192,13 @@ module.exports = foduler.module('module:web-base')
                             name: err.name,
                             message: err.message || err,
                             errors: err.errors
-                        })
-                    })
-            }
+                        });
+                    });
+            };
             res.promiseHtml = function () {
-                throw 'todo html'
-            }
+                throw 'todo html';
+            };
             next();
-        }
-    }])
+        };
+    }]);
 
-    .factory('m:w tools', ['Promise',
-        function () {
-
-        }
-    ])
-    .factory('m:w ordering', [
-        function () {
-            /**
-             * @param queryParamName string default ordering
-             */
-            return function (options) {
-
-                return function (req, res, next) {
-
-                    var str = req.query[queryParamName || 'ordering'];
-
-                    var ordering = {}
-                    if (str) {
-                        try {
-                            var params = JSON.parse(str)
-
-                            for (var k in params) {
-                                ordering.field = k;
-                                ordering.type = params[k];
-                                break
-                            }
-                        } catch (e) {
-
-                        }
-                    }
-
-
-                    req.ordering = ordering
-
-
-                    next()
-                }
-            }
-        }
-    ])

@@ -3,7 +3,7 @@ var fs = require('fs');
 var path = require('path');
 
 
-module.exports = foduler.module('module:view-engine')
+module.exports = foduler.module('view-engine').as('$view')
     .factory('swig', function () {
         return require('swig');
     })
