@@ -1,4 +1,4 @@
-var foduler = require('./foduler1');
+var foduler = require('./index');
 
 
 module.exports = foduler.module('web-base').as('$web')
