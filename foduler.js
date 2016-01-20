@@ -274,10 +274,7 @@ function $$foduleInstance($instanceName) {
                     for (i = 0; i < handle.length - 1; i++) {
                         factoryName = handle[i];
                         {
-                            //console.log('$invoke 2>', factoryName, $fodule.$as);
                             dep = $self.$factoryValue(factoryName, $fodule);
-
-                            //console.log('$invoke dep', factoryName, dep);
 
                             if (dep) {
                                 dependencies.push(dep.result);

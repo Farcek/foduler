@@ -201,9 +201,7 @@ describe('foduler', function () {
                 .run(['$promise',
                     function (Promise) {
                         return new Promise(function (resolve) {
-                            console.log(2)
                             setTimeout(function () {
-                                console.log(3)
                                 a = 1;
                                 resolve();
                             }, 1000);
@@ -215,7 +213,6 @@ describe('foduler', function () {
             var ModuleB = foduler.module('MB')
                 .include(ModuleA)
                 .on('postRun', function () {
-                    console.log(1)
                     assert.equal(1, a);
                     done();
                 });
