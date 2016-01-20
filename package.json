@@ -1,7 +1,7 @@
 {
   "name": "foduler",
   "version": "2.0.0",
-  "description": "",
+  "description": "di library",
   "main": "index.js",
   "scripts": {
     "test": "macha"
