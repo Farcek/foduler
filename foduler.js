@@ -8,7 +8,7 @@ var stringFormat = require('string-format');
 
 function nameChecker(name) {
     if (name.indexOf(':') > -1)
-        throw  new Error('not supported name. not allowed `:` char');
+        throw  new Error('`{0}` - not supported name. not allowed `:` char'.format(name));
 }
 
 function $$module(name) {
