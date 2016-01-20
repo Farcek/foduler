@@ -18,8 +18,8 @@ var module = foduler.module('test-mailer')
                 //requiresAuth: true,
                 //domains: ["gmail.com", "googlemail.com"],
                 auth: {
-                    user: "farcek@gmail.com",
-                    pass: "ftjgvvP099"
+                    user: "xx",
+                    pass: "xxx"
                 }
             });
 
