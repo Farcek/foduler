@@ -286,7 +286,7 @@ function $$foduleInstance($instanceName) {
                     return fn.apply($fodule.$module, dependencies);
 
                 } else {
-                    for (i = 0; i < handle.length - 1; i++) {
+                    for (i = 0; i < handle.length; i++) {
                         factoryName = handle[i];
                         dep = $self.$factoryValue(factoryName, $fodule);
                         if (dep === false) {
