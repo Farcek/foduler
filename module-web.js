@@ -238,7 +238,7 @@ module.exports = foduler.module('web-base').as('$web')
     })
 
 
-    .factory('promise-express', ['Promise', function (Promise) {
+    .factory('promise-express', ['$promise', function (Promise) {
         return function (req, res, next) {
             res.promiseJson = function (fn) {
                 Promise.try(fn)
