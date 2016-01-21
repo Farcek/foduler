@@ -203,81 +203,36 @@ module.exports = foduler.module('web-base').as('$web')
     .factory('tool.filtering', function () {
         /**
          * @function $web.'tool.filtering'
+         *
+         * @param {function} [options.parser] - parser function
+         * @param {string} [options.queryParam] - default parser in query param name
          */
         return function (options) {
             options = options || {};
 
-            var fieldParam = options.fieldParam || 'order';
+            var queryParam = options.queryParam || 'q';
 
 
             var parser = options.parser || function (req) {
-                    return (fieldParam in req.query) && [{
-                            field: req.query[fieldParam],
-                            type: req.query[fieldParam],
-                        }];
+                    return (queryParam in req.query) && {
+                            query: req.query[queryParam]
+                        };
                 };
 
 
             return function (req, res, next) {
-                var str = req.query[name || 'filtering'];
+
 
                 var params = parser;
                 req.filtering = {
                     get query() {
-                        return "";
+                        return params && params.query;
+                    },
+                    get filter() {
+                        return params && params.filters;
                     }
                 }
                 return next();
-
-                var params = [];
-                if (str) {
-                    try {
-                        params = JSON.parse(str);
-                    } catch (e) {
-
-                    }
-                }
-                var groupOr = function (data) {
-
-                    return function () {
-                        var q = this;
-
-                        data.forEach(function (it) {
-                            if (it) {
-                                var n = it.n || it.name || it.field;
-                                var v = it.v || it.vl || it.value;
-                                var op = it.op || it.operator;
-                                if (n && op)
-                                    q.orWhere(n, op, v);
-                            }
-
-                        });
-                    };
-                };
-
-                req.filtering = {
-                    params: params,
-                    whereApply: function (q) {
-                        if (Array.isArray(params)) {
-                            params.forEach(function (it) {
-
-                                if (it)
-                                    if ('$or' in  it) {
-                                        q.where(groupOr(it.$or));
-                                    } else {
-
-                                        var n = it.n || it.name || it.field;
-                                        var v = it.v || it.vl || it.value;
-                                        var op = it.op || it.operator;
-                                        if (n && op)
-                                            q.where(n, op, v);
-                                    }
-                            });
-                        }
-                        return q;
-                    }
-                };
-                next();
             };
         };
     })
