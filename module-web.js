@@ -1,14 +1,28 @@
 var foduler = require('./index');
 
 
+/**
+ * module name `web-base`.
+ * @namespace $web
+ */
 module.exports = foduler.module('web-base').as('$web')
+
     .factory('express', function () {
+        /**
+         * @func $web.express
+         */
         return require('express');
     })
     .factory('session', function () {
+        /**
+         * @func $web.session
+         */
         return require('express-session');
     })
     .factory('favicon', function () {
+        /**
+         * @func $web.favicon
+         */
         return require('serve-favicon');
     })
     .factory('morgan', function () {
@@ -42,10 +56,11 @@ module.exports = foduler.module('web-base').as('$web')
             /***
              * options.app | options.base
              * options.before | options.middleware
+             * options.routerOptions | options.options
              */
             return function (path, options) {
                 options = options || {};
-                var router = express.Router();
+                var router = express.Router(options.routerOptions || options.options);
                 var base = options.base || options.app || app;
                 var before = options.before || options.middleware;
                 if (before) {
@@ -59,72 +74,161 @@ module.exports = foduler.module('web-base').as('$web')
     ])
 
 
-
-    .factory('tools', ['tool.pager', 'tool.ordering', 'tool.filtering',
-        function (pager, order, filter) {
+    .factory('tools', ['tool.paging', 'tool.ordering', 'tool.filtering',
+        function (pageing, order, filter) {
             return {
-                pager: pager, order: order, filter: filter
+                paging: pageing, order: order, filter: filter
             };
         }
     ])
-    .factory('tool.pager', function () {
-        return function (name) {
+    .factory('tool.paging', function () {
+        /**
+         * @function $web.'tool.paging'
+         *
+         * @param {function} options.parser - parameter resolver function
+         * <pre>
+         *  {
+         *      ..
+         *      parser : function(req){
+         *          return {
+         *              page: req.param.page
+         *              limit: 10
+         *          }
+         *      }
+         *      ..
+         *  }
+         *  </pre>
+         * @param {number} options.limit - default limit
+         * @param {number} options.maxLimit - default max limit
+         *
+         */
+        return function (options) {
+            options = options || {};
+            var limit = options.limit || 15;
+            var maxLimit = options.maxLimit || 1000;
+
+            var parser = options.parser || function (req) {
+                    return {
+                        page: req.query.page || req.query.p,
+                        limit: req.query.limit || req.query.l || limit
+                    };
+                };
+
             return function (req, res, next) {
 
-                var str = req.query[name || 'pagination'];
-                var pagination = {};
-                if (str) {
-                    try {
-                        pagination = JSON.parse(str);
-                    } catch (e) {
-
-                    }
+                if ('paging' in req) {
+                    return next();
                 }
 
-                var p = pagination.page || pagination.p || 1;
-                var l = pagination.limit || pagination.l || 1;
-                if (l > 100) l = 100;
+                var params = parser(req);
 
-                req.pager = {
-                    page: p,
-                    limit: l,
-                    offset: (p - 1) * l
+                var p = params.page || 1;
+                var l = params.limit || limit;
+                if (l > maxLimit) l = maxLimit;
+
+                req.paging = {
+                    get page() {
+                        return p;
+                    },
+                    get limit() {
+                        return l;
+                    },
+                    get offset() {
+                        return (p - 1) * l;
+                    }
                 };
                 next();
             };
         };
     })
-    .factory('tool.ordering', function () {
-        return function (name) {
+    .factory('tool.ordering', ['$lodash',
+        function (_) {
+            /**
+             * @function $web.'tool.ordering'
+             *
+             * @param {function} [options.parser] - parser
+             * @param {String} [options.fieldParam=order] - order field param
+             */
+            return function (options) {
+
+                options = options || {};
+                var fieldParam = options.fieldParam || 'order';
+                var typeParam = options.typeParam || 'type';
+
+                var defaultType = options.defaultType;
+                var defaultField = options.defaultField || 'asc';
+
+                var parser = options.parser || function (req) {
+                        return (fieldParam in req.query) && [{
+                                field: req.query[fieldParam],
+                                type: req.query[fieldParam],
+                            }];
+                    };
+
+                return function (req, res, next) {
+                    if ('ordering' in req) {
+                        return next();
+                    }
+                    var params = parser(req), done = function (ordering) {
+                        req.ordering = ordering;
+                        next();
+                    };
+                    if (params) {
+                        if (_.isArray(params) && params.length > 0) {
+                            var ordering = [];
+                            for (var i in params) {
+                                var field = params[i] && params[i].field;
+                                var type = (params[i] && params[i].type) || defaultType;
+                                if (field) {
+                                    ordering.push([field, type]);
+                                }
+                            }
+
+                            if (ordering.length > 0) return done(ordering);
+                        } else {
+                            if (params.field) {
+                                return done([[params.field, params.type || defaultType]]);
+                            }
+                        }
+                    }
+
+                    if (defaultField) {
+                        return done([[defaultField, defaultType]]);
+                    }
+                    next();
+                };
+            };
+        }
+    ])
+    .factory('tool.filtering', function () {
+        /**
+         * @function $web.'tool.filtering'
+         */
+        return function (options) {
+            options = options || {};
+
+            var fieldParam = options.fieldParam || 'order';
+
+
+            var parser = options.parser || function (req) {
+                    return (fieldParam in req.query) && [{
+                            field: req.query[fieldParam],
+                            type: req.query[fieldParam],
+                        }];
+                };
+
 
             return function (req, res, next) {
+                var str = req.query[name || 'filtering'];
 
-                var str = req.query[name || 'ordering'];
-                var ordering = {};
-                if (str) {
-                    try {
-                        var params = JSON.parse(str);
-
-                        for (var k in params) {
-                            ordering.field = k;
-                            ordering.type = params[k];
-                            break;
-                        }
-                    } catch (e) {
-
+                var params = parser;
+                req.filtering = {
+                    get query() {
+                        return "";
                     }
                 }
-                req.ordering = ordering;
-                next();
-            };
-        };
-    })
-    .factory('tool.filtering', function () {
-        return function (name) {
+                return next();
 
-            return function (req, res, next) {
-
-                var str = req.query[name || 'filtering'];
                 var params = [];
                 if (str) {
                     try {
