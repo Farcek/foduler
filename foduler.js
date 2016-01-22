@@ -334,6 +334,7 @@ function $$foduleInstance($instanceName) {
             })(factoryName);
 
 
+
             var resultOk = function (value) {
                 return {
                     result: value
@@ -422,7 +423,7 @@ function foduler($instanceName) {
     var $instance = $$foduleInstance($instanceName);
 
     return {
-
+        varsion : '2.0.0',
         module: function (name) {
             var module = $$module(name, $instance);
             $instance.register(module);

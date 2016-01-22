@@ -1,5 +1,5 @@
 var foduler = require('./index');
-
+var expressValidator = require('express-validator');
 
 /**
  * module name `web-base`.
@@ -231,13 +231,42 @@ module.exports = foduler.module('web-base').as('$web')
                     get filter() {
                         return params && params.filters;
                     }
-                }
+                };
                 return next();
             };
         };
     })
 
+    .factory('validator', ['$promise',
+        function (Promise) {
+            return function (options) {
+                return [expressValidator(options), function (req, res, next) {
+                    req.valid = function (sync) {
+                        var p;
+                        if (sync) p = new Promise(function (resolve, reject) {
+                            var err = req.validationErrors();
+                            if (err) return reject(err);
+                            resolve();
+                        });
+                        else p = req.asyncValidationErrors();
 
+                        return p
+                            .then(function () {
+                                return true;
+                            })
+                            .catch(function (errors) {
+                                throw {
+                                    name: 'validation',
+                                    code: 400,
+                                    errors: errors
+                                };
+                            });
+                    };
+                    next();
+                }];
+            };
+        }
+    ])
     .factory('promise-express', ['$promise', function (Promise) {
         return function (req, res, next) {
             res.promiseJson = function (fn) {
@@ -246,12 +275,24 @@ module.exports = foduler.module('web-base').as('$web')
                         res.json(result);
                     })
                     .catch(function (err) {
-                        res.status(err.status || 500);
-                        res.json({
-                            name: err.name,
-                            message: err.message || err,
-                            errors: err.errors
-                        });
+
+
+                        res.status(err.status || err.code || 500);
+                        if (err.name && err.message) {
+                            return res.json({
+                                name: err.name,
+                                message: err.message
+                            });
+                        }
+
+                        if (err.name && err.errors) {
+                            return res.json({
+                                name: err.name,
+                                errors: err.errors
+                            });
+                        }
+
+                        res.json(err);
                     });
             };
             res.promiseHtml = function () {
