@@ -241,6 +241,7 @@ module.exports = function (foduler) {
                 var expressValidator = require('express-validator');
 
                 return function (options) {
+
                     return [expressValidator(options), function (req, res, next) {
                         req.valid = function (sync) {
                             var p;
@@ -275,26 +276,7 @@ module.exports = function (foduler) {
                         .then(function (result) {
                             res.json(result);
                         })
-                        .catch(function (err) {
-
-
-                            res.status(err.status || err.code || 500);
-                            if (err.name && err.message) {
-                                return res.json({
-                                    name: err.name,
-                                    message: err.message
-                                });
-                            }
-
-                            if (err.name && err.errors) {
-                                return res.json({
-                                    name: err.name,
-                                    errors: err.errors
-                                });
-                            }
-
-                            res.json(err);
-                        });
+                        .catch(next);
                 };
                 res.promiseHtml = function () {
                     throw 'todo html';

@@ -181,11 +181,11 @@ function $$foduleInstance($instanceName) {
     //};
 
     var $system = $$module('$system').as('$', false)
-        .factory('injector', function () {
-            return function (name) {
-                return $self.$factoryValue(name, $system);
-            };
-        })
+        //.factory('injector', function () {
+        //    return function (name) {
+        //        return $self.$factoryValue(name, $system);
+        //    };
+        //})
         .factory('value', function () {
             return function (name) {
                 return values[name];
@@ -299,7 +299,21 @@ function $$foduleInstance($instanceName) {
             throw  new Error('not supported handle');
         },
         $factoryValue: function (factoryName, $fodule) {
-            var fodule;
+            var fodule, dep;
+
+            if (factoryName === '$injector') {
+                return {
+                    result: function (name) {
+                        dep = $self.$factoryValue(name, $fodule);
+                        if (dep === false) {
+                            throw 'not found factory `{0}`'.format(factoryName);
+                        }
+
+                        return dep.result;
+                    }
+                };
+            }
+
 
             var namer = (function (name) {
                 'use strict';
@@ -332,7 +346,6 @@ function $$foduleInstance($instanceName) {
                 throw new Error('todo. not supported name. ');
 
             })(factoryName);
-
 
 
             var resultOk = function (value) {
@@ -423,7 +436,7 @@ function foduler($instanceName) {
     var $instance = $$foduleInstance($instanceName);
 
     return {
-        varsion : '2.0.0',
+        varsion: '2.0.0',
         module: function (name) {
             var module = $$module(name, $instance);
             $instance.register(module);
