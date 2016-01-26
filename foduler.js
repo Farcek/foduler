@@ -89,6 +89,11 @@ function $$module(name) {
 
             nameChecker(name);
 
+            if (name in $factories) {
+                throw new Error('already defined');
+            }
+
+
             $factories[name] = handles;
             return $self;
         },
