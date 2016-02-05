@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "private": true,
+  "typescript" : {
+    "definition": "foduler.d.ts"
+  },
   "dependencies": {
     "base64-url": "^1.2.1",
     "bluebird": "^2.10.0",

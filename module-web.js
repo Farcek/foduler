@@ -54,6 +54,7 @@ module.exports = function (foduler) {
             function (app, express) {
                 /***
                  * options.app | options.base
+                 * options.base | options.app
                  * options.before | options.middleware
                  * options.routerOptions | options.options
                  */
@@ -71,8 +72,6 @@ module.exports = function (foduler) {
                 };
             }
         ])
-
-
         .factory('tools', ['tool.paging', 'tool.ordering', 'tool.filtering',
             function (pageing, order, filter) {
                 return {
@@ -284,7 +283,5 @@ module.exports = function (foduler) {
                 next();
             };
         }]);
-
-
 };
 

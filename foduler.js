@@ -437,26 +437,18 @@ function $$foduleInstance($instanceName) {
     }
 }
 
-function foduler($instanceName) {
-    var $instance = $$foduleInstance($instanceName);
-
-    return {
-        varsion: '2.0.0',
-        module: function (name) {
-            var module = $$module(name, $instance);
-            $instance.register(module);
-            return module;
-        },
-        start: function (module) {
-            $instance.start(module);
-        }
+module.exports = function (instanceName) {
+    var $instance = $$foduleInstance(instanceName);
+    this.start = function (module) {
+        $instance.start(module);
+    };
+    this.module = function (name) {
+        var module = $$module(name, $instance);
+        $instance.register(module);
+        return module;
     };
 }
-
-module.exports = foduler('default foduleInstance');
-module.exports.factory = function ($instanceName) {
-    return foduler($instanceName);
-};
+module.exports.version = '2.0.1';
 
 
 //var test = foduler('edsd');
