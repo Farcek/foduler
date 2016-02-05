@@ -4,7 +4,7 @@ var Foduler = require('../index');
 describe('foduler', function () {
     var foduler;
     beforeEach(function () {
-        foduler = Foduler.factory('test');
+        foduler = new Foduler('test');
     });
 
 
