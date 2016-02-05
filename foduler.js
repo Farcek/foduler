@@ -437,21 +437,74 @@ function $$foduleInstance($instanceName) {
     }
 }
 
-module.exports = function (instanceName) {
-    var $instance = $$foduleInstance(instanceName);
-    this.start = function (module) {
-        $instance.start(module);
-    };
-    this.module = function (name) {
-        var module = $$module(name, $instance);
-        $instance.register(module);
+
+var factory = function (instanceName) {
+    var $foduler = {
+        $instance: $$foduleInstance(instanceName || 'default instance'),
+        $module: false
+    }
+
+
+    $foduler.module = function (name) {
+        var module = $$module(name, $foduler.$instance);
+        $foduler.$instance.register(module);
+
+        if ($foduler.$module === false) {
+            $foduler.$module = module;
+        }
+
         return module;
     };
-}
+
+    return $foduler;
+};
+
+var start = function ($foduler) {
+    if ($foduler && $foduler.$instance && $foduler.$module) {
+        return $foduler.$instance.start($foduler.$module);
+    }
+    throw new Error('not found staring module');
+};
+
+
+module.exports.factory = factory;
+
+module.exports.start = start;
+
 module.exports.version = '2.0.1';
 
 
-//var test = foduler('edsd');
+//var t = factory('tt');
+//
+//t.module('n1')
+//    .run(function () {
+//        console.log('run ok')
+//    })
+//start(t);
+
+
+//module.exports = function foduler(instanceName) {
+//    var $instance = $$foduleInstance(instanceName || 'default instance');
+//    var $module = false;
+//    this.start = function () {
+//        if ($module) {
+//            return $instance.start($module);
+//        }
+//        throw new Error('not found staring module');
+//    };
+//
+//    this.module = function (name) {
+//        var module = $$module(name, $instance);
+//        $instance.register(module);
+//
+//        if ($module === false) {
+//            $module = module;
+//        }
+//
+//        return module;
+//    };
+//}
+
 //
 //test.module('test')
 //    .factory('aa:a')

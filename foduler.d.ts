@@ -1,33 +1,34 @@
-declare namespace Foduler {
-  interface Fodule {
-      as(alias: string): Fodule;
-      value(name: string, value: any): Fodule;
-      factory(name: string, factory: Function): Fodule;
-      factory(name: string, handlers: any[]): Fodule;
+declare namespace foduler {
+    interface IFodule {
+        as(alias: string): IFodule;
+        value(name: string, value: any): IFodule;
+        factory(name: string, factory: Function): IFodule;
+        factory(name: string, handlers: any[]): IFodule;
 
-      on(event: string, factory: Function): Fodule;
-      on(event: string, handlers: any[]): Fodule;
+        on(event: string, factory: Function): IFodule;
+        on(event: string, handlers: any[]): IFodule;
 
-      include(module: any): Fodule;
+        include(module: any): IFodule;
 
-      config(factory: Function): Fodule;
-      config(handlers: any[]): Fodule;
+        config(factory: Function): IFodule;
+        config(handlers: any[]): IFodule;
 
-      run(factory: Function): Fodule;
-      run(handlers: any[]): Fodule;
-  }
-  export function factory(instanceName: string): Foduler;
-  interface Foduler {
-      varsion: string;
-      module(name: string): Fodule;
-      start(module: Fodule): Fodule;
-  }
+        run(factory: Function): IFodule;
+        run(handlers: any[]): IFodule;
+    }
+    
+    interface IModuler {
+        module(name: string): IFodule;
+    }
 
+    export function factory(instanceName: string):IModuler;
 
-  export var varsion: string;
-  export function module(name: string): Fodule;
-  export function start(module: Fodule): Fodule;
+    export function start($foduler: IModuler): void;
+
+    export var varsion: string;
 }
+
+
 declare module "foduler" {
-  export = Foduler;
+    export = foduler;
 }
