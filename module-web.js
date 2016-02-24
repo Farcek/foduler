@@ -4,7 +4,25 @@
  */
 module.exports = function (foduler) {
 
-    return (foduler || require('./index')).module('web-base').as('$web')
+    foduler.$web = {
+        express: '$web:express',
+        session: '$web:session',
+        favicon: '$web:favicon',
+        morgan: '$web:morgan',
+        bodyParser: '$web:body-parser',
+        cookieParser: '$web:cookie-parser',
+        appFactory: '$web:appFactory',
+        app: '$web:app',
+        routerFactory: '$web:routerFactory',
+        tools: '$web:tools',
+        toolPaging: '$web:tool.paging',
+        toolOrdering: '$web:tool.ordering',
+        toolFiltering: '$web:tool.filtering',
+        validator: '$web:validator',
+        promiseExpress: '$web:promise-express'
+    };
+
+    return (foduler).module('web-base').as('$web')
 
         .factory('express', function () {
             /**
@@ -35,17 +53,15 @@ module.exports = function (foduler) {
         })
 
         .factory('appFactory', ['express', function (express) {
-            var _app;
-            return function (app) {
-                var _app = app || (_app = express());
-
-                _app.disable('x-powered-by');
-                return _app;
+            return function () {
+                var app = express();
+                app.disable('x-powered-by');
+                return app;
             };
         }])
+
         .factory('app', ['appFactory',
             function (appFactory) {
-
                 return appFactory();
             }
         ])

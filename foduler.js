@@ -456,6 +456,12 @@ var factory = function (instanceName) {
         return module;
     };
 
+    $foduler.$system = {
+        $lodash: '$lodash',
+        $promise: '$promise',
+        $emit: '$promise'
+    }
+
     return $foduler;
 };
 

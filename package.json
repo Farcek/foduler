@@ -9,8 +9,11 @@
   "author": "",
   "license": "ISC",
   "private": true,
-  "typescript" : {
-    "definition": "foduler.d.ts"
+  "typescript": {
+    "definitions": [
+      "foduler.d.ts",
+      "module-web.d.ts"
+    ]
   },
   "dependencies": {
     "base64-url": "^1.2.1",

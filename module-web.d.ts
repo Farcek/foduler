@@ -1,27 +1,35 @@
-/////<reference path="foduler.d.ts"/>
-//
-//declare module Foduler.web {
-//
-//    export module factory {
-//        export interface appFactory {
-//            (app:any):  Express.Application;
-//        }
-//        export interface routerFactory {
-//            (path:string, options:routerFactoryOptions):  Express.Application;
-//        }
-//    }
-//
-//
-//
-//}
-//
-//interface routerFactoryOptions {
-//    base? : any;
-//    before? : Array<any> | Function;
-//    routerOptions? : Object;
-//}
-//
-//declare var fw: Foduler.Fodule;
-//declare module "foduler/module-web" {
-//    export = fw;
-//}
+declare namespace foduler {
+
+
+    interface IModuler {
+        $web: web.$factories;
+    }
+
+    export module web {
+        interface $factories {
+            express: string,
+            session: string,
+            favicon: string,
+            morgan: string,
+            bodyParser: string,
+            cookieParser: string,
+            appFactory: string,
+            app: string,
+            routerFactory: string,
+            tools: string,
+            toolPaging: string,
+            toolOrdering: string,
+            toolFiltering: string,
+            validator: string,
+            promiseExpress: string
+        }
+        interface routerFactoryOptions {
+            base?: any,
+            before?: any,
+            options?: any
+        }
+        export interface routerFactory {
+            (path:string, options:routerFactoryOptions): void;
+        }
+    }
+}

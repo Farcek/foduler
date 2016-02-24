@@ -4,7 +4,7 @@ var path = require('path');
 
 
 module.exports = function (foduler) {
-    return (foduler || require('./index')).module('view-engine').as('$view')
+    return foduler.module('view-engine').as('$view')
         .factory('swig', function () {
             return require('swig');
         })
