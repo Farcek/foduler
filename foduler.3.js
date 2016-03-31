@@ -61,7 +61,7 @@ Moduler.prototype.include = function () {
             if (it instanceof Moduler) {
                 self.includes[it.$uindex] = it;
             } else {
-                console.log('warning: cannot include', it);
+                console.log('warning: cannot include. the module `{0}`. request item'.format(self.name), it);
             }
         });
     return this;
@@ -207,7 +207,7 @@ Runner.prototype.inject = function (name, own) {
     if (names.module) {
         module = self.findFodule(names.module);
         if (module === null) {
-            throw new Error('not found module. find modulename={0}'.format(names.module));
+            throw new Error('not found module. find modulename=`{0}`; inject name= `{1}`  ; using module `{2}`'.format(names.module, name, own.name));
         }
     }
 
