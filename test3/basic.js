@@ -115,29 +115,55 @@ describe('basic', function () {
 
     });
 
-    it('system module', function (done) {
+    describe('system module', function () {
+        it('$promise', function (done) {
 
 
-        var ModuleA = new Moduler('Ma')
-            .factory('a', [
-                function ($promise) {
-                    return $promise.resolve(17);
-                }
-            ]);
+            var ModuleA = new Moduler('Ma')
+                .factory('a', [
+                    function ($promise) {
+                        return $promise.resolve(17);
+                    }
+                ]);
 
 
-        var ModuleB = new Moduler('MB')
-            .include(ModuleA)
-            .run(function (Ma$a) {
-                assert.equal(Ma$a, 17);
-                done();
-            });
+            var ModuleB = new Moduler('MB')
+                .include(ModuleA)
+                .run(function (Ma$a) {
+                    assert.equal(Ma$a, 17);
+                    done();
+                });
 
 
-        new Runner(ModuleB);
+            new Runner(ModuleB);
 
 
+        });
+        it('$inject', function (done) {
+
+
+            var ModuleA = new Moduler('Ma')
+                .factory('a', [
+                    function ($promise) {
+                        return $promise.resolve(17);
+                    }
+                ]);
+
+
+            var ModuleB = new Moduler('MB')
+                .include(ModuleA)
+                .run(function ($inject) {
+                    assert.equal($inject.get(), 17);
+                    done();
+                });
+
+
+            new Runner(ModuleB);
+
+
+        });
     });
+
 
     describe('promise', function () {
         it('run', function (done) {
