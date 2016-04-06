@@ -6,6 +6,7 @@ var paramNames = require('get-parameter-names');
 var helper = require('./helper');
 var Promise = require('bluebird');
 var lodash = require('lodash');
+var moment = require('moment');
 
 var stringFormat = require('string-format');
 
@@ -198,6 +199,9 @@ Runner.prototype.inject = function (name, own) {
         return function (eventName) {
             return self.emit(eventName);
         };
+    }
+    if (name === "$moment") {
+        return moment;
     }
 
     // -- end system inject
