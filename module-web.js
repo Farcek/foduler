@@ -64,13 +64,13 @@ module.exports = new (require('./index').Moduler)("$moduleWeb", '$web')
             return router;
         };
     })
-    .factory('tools', ['tool.paging', 'tool.ordering', 'tool.filtering',
-        function (pageing, order, filter) {
-            return {
-                paging: pageing, order: order, filter: filter
-            };
-        }
-    ])
+
+    .factory('tools', function (toolPaging, toolOrdering, toolFiltering) {
+        return {
+            paging: toolPaging, ordering: toolOrdering, filtering: toolFiltering
+        };
+    }
+)
     .factory('toolPaging', function () {
         /**
          * @function $web.'tool.paging'
@@ -125,6 +125,9 @@ module.exports = new (require('./index').Moduler)("$moduleWeb", '$web')
                     },
                     get offset() {
                         return (p - 1) * l;
+                    },
+                    get raw() {
+                        return params;
                     }
                 };
                 next();
