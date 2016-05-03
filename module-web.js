@@ -112,8 +112,8 @@ module.exports = new (require('./index').Moduler)("$moduleWeb", '$web')
 
                 var params = parser(req);
 
-                var p = params.page || 1;
-                var l = params.limit || limit;
+                var p = parseInt(params.page)  || 1;
+                var l = parseInt(params.limit) || limit;
                 if (l > maxLimit) l = maxLimit;
 
                 req.paging = {
